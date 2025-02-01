@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cielo Estrellado</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background-color: black;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 1s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        /* New styles for shooting stars */
+        .shooting-star {
+            position: absolute;
+            background-color: yellow;
+            height: 2px;
+            width: 100px;
+            animation: shoot 1s forwards;
+        }
+        @keyframes shoot {
+            0% { transform: translateY(0) translateX(0); opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100vw); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const numStars = 100;
+        const stars = [];
+
+        for (let i = 0; i < numStars; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 1; // Size between 1 and 4
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${Math.random() * 100}vh`;
+            star.style.left = `${Math.random() * 100}vw`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            document.body.appendChild(star);
+            stars.push(star);
+        }
+
+        function randomTwinkle() {
+            const randomStar = stars[Math.floor(Math.random() * stars.length)];
+            randomStar.style.animation = 'none'; // Stop the twinkle
+            setTimeout(() => {
+                randomStar.style.animation = ''; // Restart the twinkle
+            }, 100);
+        }
+
+        setInterval(randomTwinkle, 1000); // Change twinkle every second
+
+        // Function to create shooting stars
+        function createShootingStar() {
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.top = `${Math.random() * 100}vh`;
+            shootingStar.style.left = `${Math.random() * 100}vw`;
+            document.body.appendChild(shootingStar);
+            setTimeout(() => {
+                shootingStar.remove();
+            }, 1000);
+        }
+
+        setInterval(createShootingStar, 3000); // Create a shooting star every 3 seconds
+    </script>
+</body>
+</html>
