@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cielo Estrellado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background-color: black;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 1s infinite;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            color: white;
+            opacity: 0;
+            transition: opacity 1s;
+            font-family: 'Dancing Script', cursive;
+        }
+        .line {
+            position: fixed;
+            height: 2px;
+            width: 100%;
+            background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+            top: calc(50% + 2em); /* Adjusted position further down */
+            left: 0;
+            opacity: 0;
+            animation: lineAnimation 1s forwards;
+        }
+        @keyframes lineAnimation {
+            0% { opacity: 0; transform: scaleX(0); }
+            100% { opacity: 1; transform: scaleX(1); }
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            opacity: 0;
+            animation: confettiFall 1s forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        const stars = [];
+        const numInitialStars = 100;
+        let clickCount = 0;
+        let messageTimeout;
+
+        function createStar(x, y) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 1; // Size between 1 and 4
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${y}px`;
+            star.style.left = `${x}px`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            document.body.appendChild(star);
+            stars.push(star);
+        }
+
+        function randomTwinkle() {
+            const randomStar = stars[Math.floor(Math.random() * stars.length)];
+            randomStar.style.animation = 'none'; // Stop the twinkle
+            setTimeout(() => {
+                randomStar.style.animation = ''; // Restart the twinkle
+            }, 100);
+        }
+
+        function generateInitialStars() {
+            for (let i = 0; i < numInitialStars; i++) {
+                createStar(Math.random() * window.innerWidth, Math.random() * window.innerHeight);
+            }
+        }
+
+        function createConfetti(x, y) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = `${x}px`;
+            confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            document.body.appendChild(confetti);
+            confetti.style.animationDelay = `${Math.random() * 0.5}s`;
+            setTimeout(() => {
+                document.body.removeChild(confetti);
+            }, 1000);
+        }
+
+        function showMessage() {
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.innerText = 'Cielo Estrellado';
+            document.body.appendChild(message);
+            message.style.opacity = 1;
+
+            // Create colorful lines
+            const line = document.createElement('div');
+            line.className = 'line';
+            document.body.appendChild(line);
+
+            // Create more confetti
+            for (let i = 0; i < 100; i++) { // Increased confetti amount
+                createConfetti(Math.random() * window.innerWidth, 0);
+            }
+
+            let colorChangeInterval = setInterval(() => {
+                message.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            }, 500);
+
+            messageTimeout = setTimeout(() => {
+                clearInterval(colorChangeInterval);
+                message.style.opacity = 0;
+                setTimeout(() => {
+                    document.body.removeChild(message);
+                    document.body.removeChild(line);
+                }, 1000);
+            }, 10000); // Duration remains 10 seconds
+        }
+
+        document.addEventListener('click', (event) => {
+            createStar(event.clientX, event.clientY);
+            clickCount++;
+
+            if (clickCount === 2) {
+                clearTimeout(messageTimeout);
+                showMessage();
+                clickCount = 0; // Reset click count
+            }
+
+            setTimeout(() => {
+                clickCount = 0; // Reset click count if no second click
+            }, 300); // Time window for double click
+        });
+
+        generateInitialStars(); // Generate initial stars on load
+        setInterval(randomTwinkle, 1000); // Change twinkle every second
+    </script>
+</body>
+</html>
